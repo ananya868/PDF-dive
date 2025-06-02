@@ -1,0 +1,53 @@
+# -- General Configuration for AI Core Utilities --
+
+
+# -- LLM General --
+llm_general:
+  openai:
+    default_model: "gpt-4o-mini"
+    models: 
+      - "gpt-4o"
+      - "gpt-4.1"
+      - "gpt-4.1-mini"
+      - "gpt-4.1-nano"
+      - "gpt-4o-mini"
+      - "gpt-3.5-turbo"
+  anthropic:
+    default_model: "claude-3-haiku"
+    models: 
+      - "claude-3-haiku"
+      - "claude-3-opus"
+      - "claude-2"
+    max_tokens: 1000
+    temperature: 0.7
+    top_p: 1.0
+    top_k: 250
+  mistral:
+    default_model: "mistral-large"
+    max_tokens: 1000
+    temperature: 0.7
+    top_p: 0.9
+
+
+llm_structured:
+  openai:
+    default_model: "gpt-4.1-mini"
+    models: 
+      - "gpt-4o"
+      - "gpt-4.1-mini"
+      - "gpt-4.1-nano"
+      - "gpt-4o-mini"
+  google:
+    default_model: "gemini-1.5-flash"
+    models: 
+      - "gemini-2.0-flash-lite"
+      - "gemini-1.5-flash"
+      - "gemini-1.5-flash-8b"
+  groq: 
+    default_model: "llama-3.3-70b-versatile"
+    models: 
+      - "llama-3.1-8b-instant" 
+      - "llama-3.3-70b-versatile"
+      - "deepseek-r1-distill-llama-70b"
+      - "meta-llama/llama-4-scout-17b-16e-instruct"
+  

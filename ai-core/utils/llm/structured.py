@@ -1,109 +1,121 @@
-from typing import Any, Optional, Dict
-from .base import LLMBase
+from typing import Any, Optional
+from base import LLMBase
 
 
-class StructuredLLMBase(LLMBase):
+# -- Mode --
+class structuredLLMBase(LLMBase):
     def _get_mode(self) -> str:
         return "structured"
+    
 
-
+# -- LLM Classes --
 class OpenAIStructured(StructuredLLMBase):
-    def __init__(self, api_key: str, model_name: Optional[str] = None, **kwargs) -> None:
-        super().__init__(api_key, model_name, **kwargs)
-        # -- Client -- 
+    def __init__(self, api_key: str) -> None:
+        super().__init__(api_key) 
+        
         from openai import OpenAI
         self.client = OpenAI(api_key=self.api_key)
+    
+    def list_models(self) -> list:
+        models = self.config.get("llm_structured").get("openai").get("models")
+        return models
+    
+    def generate(self, message: str, model_name: str, output_model: Any, instructions: str, **kwargs) -> Any:
+        response_cls = None
+        try:
+            response = self.client.responses.parse(
+                model = model_name,
+                instructions = instructions,
+                input = message,
+                text_format = output_model
+            )
+            event = response.output_parsed 
+            response_cls = event.dict()
+        except Exception as e:
+            response_cls = {}
+        return response_cls
 
-    def _get_llm_type(self) -> str:
-        return "openai"
+
+class GoogleAIStructured(StructuredLLMBase):
+    def __init__(self, api_key: str) -> None:
+        super().__init__(api_key)
+        
+        from google import genai 
+        self.client = genai.Client(api_key=self.api_key)
+    
+    def list_models(self) -> list:
+        models = self.config.get("llm_structured").get("google").get("models")
+        return models
+
+    def generate(self, message: str, model_name: str, output_model: Any, instructions: str, **kwargs) -> Any:
+        response_cls = None
+        try:
+            response = self.client.models.generate_content(
+                model = model_name, 
+                contents = message, 
+                config = {
+                    "response_mime_type": "application/json",
+                    "response_schema": output_model
+                }
+            )
+            event = response.parsed 
+            response_cls = event[0].model_dump()
+        except Exception as e:
+            response_cls = {}
+        return response_cls
+
+
+class GroqAIStructured(StructuredLLMBase):
+    def __init__(self, api_key: str) -> None:
+        super().__init__(api_key)
+
+        from groq import Groq
+        self.client = Groq(api_key=api_key)
 
     def list_models(self) -> list:
-        models = self.client.models.list()
-        return [model.id for model in models.data]
+        models = self.config.get("llm_structured").get("groq").get("models")
+        return models
 
-    def generate(self, prompt: str, response_format: Optional[Dict] = None, response_cls: Optional[Any] = None, **override_params) -> Any:
-        # Combine default generation parameters with any overrides for this specific call
-        params = {**self.generation_params, **override_params}
-        
-        # Set up JSON mode if no specific response format is provided
-        if response_format is None:
-            response_format = {"type": "json_object"}
-        
-        response = self.client.chat.completions.create(
-            model=self.model_name,
-            messages=[{"role": "user", "content": prompt}],
-            response_format=response_format,
-            **params
-        )
-        
-        if response_cls:
-            # Assume response_cls knows how to parse the response
-            return response_cls(response)
-        return response.choices[0].message.content
-
-
-class AnthropicStructured(StructuredLLMBase):
-    def __init__(self, api_key: str, model_name: Optional[str] = None, **kwargs) -> None:
-        super().__init__(api_key, model_name, **kwargs)
-        # -- Client -- 
-        from anthropic import Anthropic
-        self.client = Anthropic(api_key=self.api_key)
-
-    def _get_llm_type(self) -> str:
-        return "anthropic"
-
-    def list_models(self) -> list:
-        # Note: Anthropic doesn't have a list_models API as of now
-        return ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku"]
-
-    def generate(self, prompt: str, response_cls: Optional[Any] = None, **override_params) -> Any:
-        # Combine default generation parameters with any overrides
-        params = {**self.generation_params, **override_params}
-        
-        # Add system prompt for structured output
-        system_prompt = "Return your response as a JSON object with appropriate keys and values."
-        
-        response = self.client.messages.create(
-            model=self.model_name,
-            system=system_prompt,
-            messages=[{"role": "user", "content": prompt}],
-            **params
-        )
-        
-        if response_cls:
-            return response_cls(response)
-        return response.content[0].text
+    def generate(self, message: str, model_name: str, output_model: Any, instructions: str, **kwargs) -> Any:
+        response_cls = None
+        try:
+            response = self.client.chat.completions.create(
+                messages = [
+                    {
+                        "role": "system",
+                        "content": "{instructions}\n".format(instructions=instructions) +
+                        f" The JSON object must use the schema: {json.dumps(output_model.model_json_schema(), indent=2)}"
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                model = model_name,
+                temperature = 0,
+                stream = False
+            )
+            event = output_model.model_validate_json(response.choices[0].message.content)
+            response_cls = event.model_dump()
+        except Exception as e:
+            response_cls = {}
+        return response_cls
 
 
-class MistralStructured(StructuredLLMBase):
-    def __init__(self, api_key: str, model_name: Optional[str] = None, **kwargs) -> None:
-        super().__init__(api_key, model_name, **kwargs)
-        # -- Client -- 
-        from mistralai.client import MistralClient
-        self.client = MistralClient(api_key=self.api_key)
+class MistralAIStructured(StructuredLLMBase):
+    def __init__(self, api_key: str) -> None:
+        super().__init__(api_key)
 
-    def _get_llm_type(self) -> str:
-        return "mistral"
+        from mistralai import Mistral
+        self.client = Mistral(api_key=api_key)
 
-    def list_models(self) -> list:
-        return ["mistral-tiny", "mistral-small", "mistral-medium", "mistral-large"]
+    def list_models(self) -> list:  
+        models = self.config.get("llm_structured").get("mistral").get("models")
+        return models
+    
+    def generate(self, message: str, model_name: str, output_model: Any, instructions: str, **kwargs) -> Any:
+        response_cls = None
+        pass
 
-    def generate(self, prompt: str, response_cls: Optional[Any] = None, **override_params) -> Any:
-        # Combine default generation parameters with any overrides
-        params = {**self.generation_params, **override_params}
-        
-        # Add system prompt for structured output
-        system_prompt = "Return your response as a JSON object with appropriate keys and values."
-        
-        response = self.client.chat(
-            model=self.model_name,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt}
-            ],
-            **params
-        )
-        
-        if response_cls:
-            return response_cls(response)
-        return response.choices[0].message.content
+    
+    
