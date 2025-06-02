@@ -13,6 +13,8 @@
 - *Voice mode will require user to talk to the document to access any AI based option.* 
 NOTE: Chat mode can be used with this mode as well.
 
+**NOTE:** Chat vs Voice features will differ in some parts.
+
 1. **Open, View and Read PDF document(s) in app** 
 2. **Overview Features** 
    - Summarize | Explain 
