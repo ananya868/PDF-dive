@@ -7,8 +7,8 @@ __pycache__/
 *.so
 
 # Env 
-.env 
-.venv/
+*.env
+python-ai-core/.venv/
 
 # Distribution / packaging
 .Python

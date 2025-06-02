@@ -1,5 +1,5 @@
 def main():
-    print("Hello from document-speaks!")
+    print("Hello from python-ai-core!")
 
 
 if __name__ == "__main__":
