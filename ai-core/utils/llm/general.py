@@ -1,14 +1,3 @@
-"""
-General LLM classes for basic text to text generation, no structured output.
-
-LLMs: 
-- OpenAI
-- Google AI
-- Groq AI
-- Mistral AI
-- Anthropic AI
-"""
-
 from typing import Any, Optional
 from base import LLMBase
 
@@ -21,7 +10,7 @@ class GeneralLLMBase(LLMBase):
 
 # -- LLM Classes --
 class OpenAIGeneral(GeneralLLMBase):
-    def __init__(self, api_key: str) -> None:
+    def __init__(self, api_key: str) -> Any:
         super().__init__(api_key) 
         
         from openai import OpenAI
@@ -46,7 +35,7 @@ class OpenAIGeneral(GeneralLLMBase):
 
 
 class GoogleAIGeneral(GeneralLLMBase):
-    def __init__(self, api_key: str) -> None: 
+    def __init__(self, api_key: str) -> Any: 
         super().__init__(api_key) 
         
         from google import genai
@@ -71,7 +60,7 @@ class GoogleAIGeneral(GeneralLLMBase):
 
 
 class GroqAIGeneral(GeneralLLMBase):
-    def __init__(self, api_key: str) -> None: 
+    def __init__(self, api_key: str) -> Any: 
         super().__init__(api_key) 
         
         from groq import Groq
@@ -89,7 +78,7 @@ class GroqAIGeneral(GeneralLLMBase):
                     {
                         "role": "system",
                         "content": instructions 
-                    }
+                    },
                     {
                         "role": "user",
                         "content": message
@@ -104,7 +93,7 @@ class GroqAIGeneral(GeneralLLMBase):
 
 
 class MistralAIGeneral(GeneralLLMBase):
-    def __init__(self, api_key: str) -> None: 
+    def __init__(self, api_key: str) -> Any: 
         super().__init__(api_key) 
         
         from mistralai import Mistral
@@ -137,11 +126,11 @@ class MistralAIGeneral(GeneralLLMBase):
 
 
 class AnthropicAIGeneral(GeneralLLMBase):
-    def __init__(self, api_key: str) -> None: 
+    def __init__(self, api_key: str) -> Any: 
         super().__init__(api_key) 
         
-    import anthropic
-    self.client = anthropic.Anthropic(api_key=api_key)
+        import anthropic
+        self.client = anthropic.Anthropic(api_key=api_key)
     
     def list_models(self) -> list:
         models = self.config.get("llm_general").get("anthropic").get("models")
@@ -166,3 +155,35 @@ class AnthropicAIGeneral(GeneralLLMBase):
             response_text = f"Some error occurred: {str(e)}"
         return response_text
 
+
+# -- Factory Class --
+class GeneralLLMFactory:
+    @classmethod
+    def list_llm(cls) -> dict:
+        import os, yaml 
+
+        llm_list = None
+        try:
+            config_path = os.path.join(os.path.dirname(__file__), 'llm_config.yaml')
+            with open(config_path, 'r') as file:
+                config = yaml.safe_load(file)
+            llm_list = config.get("llm_general")
+        except Exception as e:
+            llm_list = {}
+        return llm_list
+    
+    @staticmethod 
+    def create_llm(llm_type: str, api_key: str) -> Any:
+        llm_classes = {
+            "openai": OpenAIGeneral,
+            "google": GoogleAIGeneral,
+            "groq": GroqAIGeneral,
+            "mistral": MistralAIGeneral,
+            "anthropic": AnthropicAIGeneral
+        }
+        
+        llm_class = llm_classes.get(llm_type.lower())
+        if llm_class:
+            return llm_class(api_key)
+        else:
+            raise ValueError(f"Unsupported LLM type: {llm_type}")

@@ -9,7 +9,7 @@ class LLMBase(ABC):
     def __init__(
         self,
         api_key: str
-    ) -> None: 
+    ) -> Any: 
         """
         Initialize the LLM with an API key, optional model name, and additional parameters.
             :param api_key: The API key for accessing the LLM service.
@@ -19,7 +19,6 @@ class LLMBase(ABC):
         assert api_key and isinstance(api_key, str), "API key invalid or missing."
 
         # Load default config for this LLM type and mode
-        self.llm_type = self._get_llm_type()
         self.mode = self._get_mode()
         
         # Load configuration from YAML file

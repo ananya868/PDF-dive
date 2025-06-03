@@ -3,7 +3,7 @@ from base import LLMBase
 
 
 # -- Mode --
-class structuredLLMBase(LLMBase):
+class StructuredLLMBase(LLMBase):
     def _get_mode(self) -> str:
         return "structured"
     
@@ -30,7 +30,7 @@ class OpenAIStructured(StructuredLLMBase):
                 text_format = output_model
             )
             event = response.output_parsed 
-            response_cls = event.dict()
+            response_cls = event.model_dump()
         except Exception as e:
             response_cls = {}
         return response_cls
@@ -115,7 +115,54 @@ class MistralAIStructured(StructuredLLMBase):
     
     def generate(self, message: str, model_name: str, output_model: Any, instructions: str, **kwargs) -> Any:
         response_cls = None
-        pass
-
+        try:
+            response = self.client.chat.parse(
+                model = model_name,
+                messages = [
+                    {
+                        "role": "system",
+                        "content": instructions
+                    }, 
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ], 
+                response_format = output_model,
+                max_tokens = 3000, 
+                temperature = 0
+            )
+            event = response.choices[0].message.content
+            response_cls = event 
+        except Exception as e:
+            response_cls = {}
+        return response_cls 
     
+
+# -- Factory Class -- 
+class StructuredLLMFactory:
+    @classmethod
+    def list_llm(cls) -> dict:
+        import os, yaml 
+
+        llm_list = None
+        try:
+            config_path = os.path.join(os.path.dirname(__file__), 'llm_config.yaml')
+            with open(config_path, 'r') as file:
+                config = yaml.safe_load(file)
+            llm_list = config.get("llm_general")
+        except Exception as e:
+            llm_list = {}
+        return llm_list
+
+    @staticmethod
+    def create_llm(llm_type: str, api_key: str) -> Any:
+        """Factory method to create an instance of a structured LLM class based on the type."""
+        llm_classes = {
+            "openai": OpenAIStructured,
+            "google": GoogleAIStructured,
+            "groq": GroqAIStructured,
+            "mistral": MistralAIStructured
+        }
+        return llm_classes.get(llm_type.lower())(api_key) if llm_type.lower() in llm_classes else None
     

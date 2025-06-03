@@ -1,6 +1,5 @@
 # -- General Configuration for AI Core Utilities --
 
-
 # -- LLM General --
 llm_general:
   openai:
@@ -12,23 +11,43 @@ llm_general:
       - "gpt-4.1-nano"
       - "gpt-4o-mini"
       - "gpt-3.5-turbo"
-  anthropic:
-    default_model: "claude-3-haiku"
+  google:
+    default_model: "gemini-1.5-flash"
     models: 
-      - "claude-3-haiku"
-      - "claude-3-opus"
-      - "claude-2"
-    max_tokens: 1000
-    temperature: 0.7
-    top_p: 1.0
-    top_k: 250
+      - "gemini-2.5-flash"
+      - "gemini-2.5-pro"
+      - "gemini-2.0-flash"
+      - "gemini-2.0-flash-lite"      
+      - "gemini-1.5-flash"
+      - "gemini-1.5-flash-8b"
+      - "gemini-1.5-pro"
+  groq:
+    default_model: "llama-3.3-70b-versatile"
+    models: 
+      - "llama-3.1-8b-instant" 
+      - "llama-3.3-70b-versatile"
+      - "llama3-70b"
+      - "llama3-8b"
+      - "deepseek-r1-distill-llama-70b"
+      - "meta-llama/llama-4-scout-17b-16e-instruct"
   mistral:
     default_model: "mistral-large"
-    max_tokens: 1000
-    temperature: 0.7
-    top_p: 0.9
+    models:
+      - "mistral-small"
+      - "mistral-3b"
+      - "mistral-8b"
+      - "mistral-large"
+  anthropic:
+    default_model: "claude-4"
+    models:
+      - "claude-4" 
+      - "claude-sonnet-4"
+      - "claude-3-7-sonnet"
+      - "claude-3-5-haiku"
+      - "claude-3-5-sonnet"
 
 
+# -- LLM Structured --
 llm_structured:
   openai:
     default_model: "gpt-4.1-mini"
@@ -50,4 +69,12 @@ llm_structured:
       - "llama-3.3-70b-versatile"
       - "deepseek-r1-distill-llama-70b"
       - "meta-llama/llama-4-scout-17b-16e-instruct"
-  
+  mistral:
+    default_model: "mistral-small"
+    models: 
+      - "mistral-small"
+      - "mistral-3b"
+      - "mistral-8b"
+      - "mistral-large"
+
+
