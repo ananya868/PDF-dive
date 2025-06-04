@@ -187,3 +187,16 @@ class GeneralLLMFactory:
             return llm_class(api_key)
         else:
             raise ValueError(f"Unsupported LLM type: {llm_type}")
+
+
+# Example usage:
+if __name__ == "__main__":
+    llm_factory = GeneralLLMFactory()
+    llm = llm_factory.create_llm("anthropic", "your_api_key_here")
+    print(llm.list_models())
+    response = llm.generate("Hello, how are you?", "gpt-3.5-turbo", "Respond in a friendly manner.")
+    print(response)
+    llm = llm_factory.create_llm("google", "your_api_key_here")
+    print(llm.list_models())
+    response = llm.generate("Hello, how are you?", "gemini-1.5-pro", "Respond in a friendly manner.")
+    print(response)

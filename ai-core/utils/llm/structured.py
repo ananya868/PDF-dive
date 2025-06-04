@@ -166,3 +166,17 @@ class StructuredLLMFactory:
         }
         return llm_classes.get(llm_type.lower())(api_key) if llm_type.lower() in llm_classes else None
     
+
+# usage 
+if __name__ == "__main__":
+    llm_type = "openai"  # Example LLM type
+    api_key = "your_api_key_here"
+    llm_instance = StructuredLLMFactory.create_llm(llm_type, api_key)
+
+    # generate
+    response = llm_instance.generate(
+        message="Your input message here",
+        model_name="gpt-4",
+        output_model=YourOutputModel,  # Replace with your actual output model
+        instructions="Your instructions here"
+    )

@@ -1,0 +1,33 @@
+prompt_list: 
+  - ov_short_summary.txt - Short Summary for Overview
+  - ov_detailed_summary.txt - Detailed Summary for Overview
+  # more-prompts
+
+prompt_inputs: 
+  ov_short_summary.txt:
+    - num_core_points
+    - num_detailed_points 
+    - num_followup_questions
+    - pdf_text
+  ov_detailed_summary.txt:
+    - num_core_points
+    - num_detailed_points 
+    - num_followup_questions
+    - pdf_text
+
+prompts:
+  overview: 
+    summarizer:
+      short: ov_short_summary.txt
+      detailed: ov_detailed_summary.txt
+    explainer: 
+      quick: ov_quick_explain.txt
+      detailed: ov_detailed_explain.txt
+
+  quick_access:
+    summarizer:
+      quick: qa_quick_summary.txt 
+    explainer: 
+      quick: qa_quick_explain.txt
+
+# more-prompts .. 
