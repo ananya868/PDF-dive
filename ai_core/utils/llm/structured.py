@@ -14,7 +14,7 @@ class OpenAIStructured(StructuredLLMBase):
         super().__init__(api_key) 
         
         from openai import OpenAI
-        self.client = OpenAI(api_key=self.api_key)
+        self.client = OpenAI(api_key=api_key)
     
     def list_models(self) -> list:
         models = self.config.get("llm_structured").get("openai").get("models")
@@ -150,7 +150,7 @@ class StructuredLLMFactory:
             config_path = os.path.join(os.path.dirname(__file__), 'llm_config.yaml')
             with open(config_path, 'r') as file:
                 config = yaml.safe_load(file)
-            llm_list = config.get("llm_general")
+            llm_list = config.get("llm_structured")
         except Exception as e:
             llm_list = {}
         return llm_list
@@ -166,17 +166,3 @@ class StructuredLLMFactory:
         }
         return llm_classes.get(llm_type.lower())(api_key) if llm_type.lower() in llm_classes else None
     
-
-# usage 
-if __name__ == "__main__":
-    llm_type = "openai"  # Example LLM type
-    api_key = "your_api_key_here"
-    llm_instance = StructuredLLMFactory.create_llm(llm_type, api_key)
-
-    # generate
-    response = llm_instance.generate(
-        message="Your input message here",
-        model_name="gpt-4",
-        output_model=YourOutputModel,  # Replace with your actual output model
-        instructions="Your instructions here"
-    )
