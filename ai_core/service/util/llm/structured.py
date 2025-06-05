@@ -1,5 +1,5 @@
 from typing import Any, Optional
-from base import LLMBase
+from util.llm.base import LLMBase
 
 
 # -- Mode --

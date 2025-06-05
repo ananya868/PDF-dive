@@ -47,6 +47,7 @@ class PromptService:
         # Build the prompt with the provided inputs
         script_dir = os.path.dirname(os.path.abspath(__file__))
         prompt_file_path = os.path.join(script_dir, prompt_file)
+        
         try:
             with open(prompt_file_path, 'r') as file:
                 prompt_template = file.read()

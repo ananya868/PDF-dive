@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "deepseek",
+        "dotenv",
         "genai",
         "groq",
         "mistralai"
