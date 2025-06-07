@@ -1,6 +1,8 @@
 prompt_list: 
   - ov_short_summary.txt - Short Summary for Overview
   - ov_detailed_summary.txt - Detailed Summary for Overview
+  - ov_detailed_translate.txt - Detailed Translation for Overview
+  - qa_quick_explain.txt - Quick Explanation for Quick Access
   # more-prompts
 
 prompt_inputs: 
@@ -14,15 +16,22 @@ prompt_inputs:
     - num_detailed_points 
     - num_followup_questions
     - pdf_text
+  ov_detailed_translate.txt:
+    - source_language
+    - target_language
+    - pdf_text
+  qa_quick_explain.txt:
+    - selected_text
+    - max_words
+
 
 prompts:
   overview: 
     summarizer:
       short: ov_short_summary.txt
       detailed: ov_detailed_summary.txt
-    explainer: 
-      quick: ov_quick_explain.txt
-      detailed: ov_detailed_explain.txt
+    translator: 
+      detailed: ov_detailed_translate.txt
 
   quick_access:
     summarizer:

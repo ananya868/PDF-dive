@@ -46,7 +46,7 @@ class OverviewSummarization(SummarizationServiceBase):
         prompt_inputs: dict,
         prompt_config: dict,
         prompt_config_path: Optional[str] = None,
-    ) -> str:
+    ) -> dict:
         """
         Summarize the provided inputs using the configured LLM and prompt.
         """

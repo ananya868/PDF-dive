@@ -1,5 +1,5 @@
 from typing import Any, Optional
-from base import LLMBase
+from util.llm.base import LLMBase
 
 
 # -- Mode --
@@ -30,7 +30,7 @@ class OpenAIGeneral(GeneralLLMBase):
             )
             response_text = response.output_text
         except Exception as e:
-            response_text = f"Some error occurred: {str(e)}"
+            raise ValueError(f"Some error occurred: {str(e)}")
         return response_text
 
 
@@ -39,8 +39,7 @@ class GoogleAIGeneral(GeneralLLMBase):
         super().__init__(api_key) 
         
         from google import genai
-        from google.genai.types import HttpOptions
-        self.client = genai.Client(https_options = HttpOptions(api_key = api_key, api_version="v1"))
+        self.client = genai.Client(api_key = api_key)
     
     def list_models(self) -> list:
         models = self.config.get("llm_general").get("google").get("models")
@@ -49,13 +48,13 @@ class GoogleAIGeneral(GeneralLLMBase):
     def generate(self, message: str, model_name: str, instructions: str, **kwargs) -> Any:
         response_text = ""
         try: 
-            response = self.client.models.generate_text(
+            response = self.client.models.generate_content(
                 model = model_name,
                 contents = message
             )
             response_text = response.text
         except Exception as e:
-            response_text = f"Some error occurred: {str(e)}"
+            raise ValueError(f"Some error occurred: {str(e)}")
         return response_text
 
 
